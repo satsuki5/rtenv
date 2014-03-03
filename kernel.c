@@ -457,7 +457,7 @@ void serial_test_task()
 				*p = '\0';
 				write(fdout, next_line, 3);
 				break;
-			}
+		}
 			else if (put_ch[0] == 127 || put_ch[0] == '\b') {
 				if (p > cmd[cur_his]) {
 					p--;
@@ -681,13 +681,13 @@ void show_task_info(int argc, char* argv[])
 		write(fdout, &next_line , 3);
 	}
 }
+void printf(char *string) {
+	for(;*string != '\0'; string += 2)	write(fdout, string, 2);
+}
 
-void show_test(int argc, char* argv[]) {
-	char ps_message[]="hello world!";
-	int ps_message_length = sizeof(ps_message);
-
-	write(fdout, &ps_message , ps_message_length);
-	write(fdout, &next_line , 3);
+void show_test(int argc, char *argv[]) {
+	printf("hello world!");
+	printf(next_line);
 }
 
 //this function helps to show int
