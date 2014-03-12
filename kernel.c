@@ -677,16 +677,48 @@ void show_task_info(int argc, char* argv[])
 			write(fdout, &task_info_status , 2);
 		write_blank(5);
 		write(fdout, &task_info_priority , 3);
-
+		
 		write(fdout, &next_line , 3);
 	}
 }
-void printf(char *string) {
-	for(;*string != '\0'; string += 2)	write(fdout, string, 2);
+typedef char * va_list;
+#define _INTSIZEOF(n) (((sizeof(n) + sizeof(int)) - 1) & ~(sizeof(int) - 1))
+
+#define va_start(ap, v) (ap = (va_list)&v + _INTSIZEOF(v))
+#define va_arg(ap, t) ( *(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)))
+#define va_end(ap) (ap = (va_list)0)
+
+void printf(char *string, ...) {
+	char c = 'a';
+	//write( 12, &c, 1);
+	va_list ptr;
+//	fdout = open("/dev/tty0/out",0);	
+	va_start(ptr, string);
+	while(*string != '\0') {
+		if(*string == '%') {
+			string++;
+			switch(*string) {
+				case'c':
+				     write( 12, &va_arg(ptr, char), 1);
+				     break;
+				case'd':
+				     c = ((char)va_arg(ptr, int)) + 0x30;
+				     write( 12, &c, 1);
+				     break;
+			}
+		} else {	
+			write( 12, string, 1);
+		}
+		string++;
+	}	
+	va_end(ptr);
 }
 
 void show_test(int argc, char *argv[]) {
-	printf("hello world!");
+	int i = 0;
+	char c = 'a';
+	printf(next_line);
+	printf("hello world!  %c %d", c, i);
 	printf(next_line);
 }
 
